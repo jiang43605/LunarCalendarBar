@@ -63,7 +63,6 @@
 				A20008 /* LunarService.swift */,
 				A60004 /* Resources */,
 			);
-			path = LunarCalendarBar;
 			sourceTree = "<group>";
 		};
 		A60004 /* Resources */ = {
@@ -72,7 +71,6 @@
 				A30001 /* Info.plist */,
 				A40001 /* Assets.xcassets */,
 			);
-			path = Resources;
 			sourceTree = "<group>";
 		};
 		A60003 /* Products */ = {
