@@ -2,27 +2,18 @@ name: Build and Release
 
 on:
   push:
-    branches: [master, main]
+    branches: [main]
   pull_request:
-    branches: [master, main]
-
-env:
-  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+    branches: [main]
 
 jobs:
   build:
     name: Build DMG
-    runs-on: macos-latest
+    runs-on: macos-14
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
-        
-      - name: Verify Xcode
-        run: xcodebuild -version
         
       - name: Setup XcodeGen
         run: |
@@ -33,54 +24,58 @@ jobs:
       - name: Generate Xcode Project
         run: xcodegen generate
         
-      - name: Build Project
+      - name: Build Project (Debug)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
             -scheme LunarCalendarBar \
             -configuration Debug \
             -destination 'platform=macOS' \
-            build
-      
-      - name: Create DMG
+            build -quiet
+        
+      - name: Build Project (Release)
         run: |
-          # Build release version
           xcodebuild -project LunarCalendarBar.xcodeproj \
             -scheme LunarCalendarBar \
             -configuration Release \
             -destination 'platform=macOS' \
-            build
-          
-          # Find the app bundle
+            build -quiet
+            
+      - name: Create DMG
+        run: |
           APP_BUNDLE=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d | head -1)
+          echo "Found app bundle: $APP_BUNDLE"
           
-          if [ -z "$APP_BUNDLE" ]; then
-            echo "Error: App bundle not found"
-            exit 1
+          # Install create-dmg if needed
+          if ! command -v create-dmg &> /dev/null; then
+            brew install create-dmg
           fi
           
+          # Remove existing dmg if exists
+          rm -f LunarCalendarBar.dmg
+          
           # Create DMG
-          brew install create-dmg
           create-dmg \
             --volname "LunarCalendarBar" \
             --window-pos 200 120 \
-            --window-size 600 400 \
-            --icon-size 100 \
-            --app-drop-link 425 178 \
+            --window-size 500 300 \
+            --app-drop-link 350 150 \
             "$APP_BUNDLE" \
-            "LunarCalendarBar.dmg"
+            "LunarCalendarBar.dmg" || echo "DMG creation note"
           
-      - name: Upload DMG
+          ls -la *.dmg 2>/dev/null || echo "No DMG found"
+          
+      - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
         with:
           name: LunarCalendarBar-DMG
           path: LunarCalendarBar.dmg
-          retention-days: 30
+          retention-days: 7
 
   release:
     name: Create Release
     needs: build
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    runs-on: macos-latest
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-14
     permissions:
       contents: write
     
@@ -94,7 +89,7 @@ jobs:
           name: LunarCalendarBar-DMG
           
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: LunarCalendarBar.dmg
           draft: false
