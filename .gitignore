@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package.json
+
+# Build results
+DerivedData/
+*.xcuserstate
+*.xcuserdatad
+xcuserdata/
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
