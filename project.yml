@@ -3,14 +3,16 @@ options:
   bundleIdPrefix: com.lunarcalendar
   deploymentTarget:
     macOS: "14.0"
-  xcodeVersion: "15.0"
+  xcodeVersion: "14.0"  # Match GitHub Actions Xcode version
+  generateEmptyDirectories: true
 
 settings:
   base:
     SWIFT_VERSION: "5.9"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
-    CODE_SIGN_IDENTITY: "-"
-    CODE_SIGN_STYLE: Manual
+    CLANG_ENABLE_MODULES: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    IPHONEOS_DEPLOYMENT_TARGET: ""
 
 targets:
   LunarCalendarBar:
@@ -18,9 +20,9 @@ targets:
     platform: macOS
     sources:
       - path: LunarCalendarBar/Sources
+        type: group
       - path: LunarCalendarBar/Resources
-        excludes:
-          - "**/.DS_Store"
+        type: group
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lunarcalendar.bar
@@ -28,6 +30,7 @@ targets:
         INFOPLIST_FILE: LunarCalendarBar/Resources/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         COMBINE_HIDPI_IMAGES: YES
-        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
         ENABLE_HARDENED_RUNTIME: NO
-        CODE_SIGN_ENTITLEMENTS: ""

@@ -15,15 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Setup XcodeGen
-        run: |
-          if ! command -v xcodegen &> /dev/null; then
-            brew install xcodegen
-          fi
-          
-      - name: Generate Xcode Project
-        run: xcodegen generate
-        
       - name: Build Project (Debug)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
@@ -31,7 +22,7 @@ jobs:
             -configuration Debug \
             -destination 'platform=macOS' \
             build -quiet
-        
+            
       - name: Build Project (Release)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
@@ -60,7 +51,7 @@ jobs:
             --window-size 500 300 \
             --app-drop-link 350 150 \
             "$APP_BUNDLE" \
-            "LunarCalendarBar.dmg" || echo "DMG creation note"
+            "LunarCalendarBar.dmg" || echo "Note: DMG may have issues"
           
           ls -la *.dmg 2>/dev/null || echo "No DMG found"
           
