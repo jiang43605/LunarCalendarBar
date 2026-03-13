@@ -15,8 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Install XcodeGen
+        run: brew install xcodegen
+        
       - name: Generate Xcode Project
-        run: swift package generate-xcodeproj
+        run: xcodegen generate
         
       - name: Build Project (Debug)
         run: |
@@ -72,8 +75,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Install XcodeGen
+        run: brew install xcodegen
+        
       - name: Generate Xcode Project
-        run: swift package generate-xcodeproj
+        run: xcodegen generate
         
       - name: Download DMG
         uses: actions/download-artifact@v4
