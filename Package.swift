@@ -15,10 +15,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "LunarCalendarBar",
-            path: "LunarCalendarBar",
-            resources: [
-                .process("Resources", excludes: ["Info.plist", "*.entitlements"])
-            ]
+            path: "LunarCalendarBar"
         )
     ]
 )
