@@ -1,0 +1,35 @@
+name: LunarCalendarBar
+options:
+  bundleIdPrefix: com.lunarcalendar
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  LunarCalendarBar:
+    type: application
+    platform: macOS
+    sources:
+      - LunarCalendarBar/Sources
+      - LunarCalendarBar/Resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lunarcalendar.bar
+        PRODUCT_NAME: LunarCalendarBar
+        INFOPLIST_FILE: LunarCalendarBar/Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/../Frameworks"
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: LunarCalendarBar/Resources/LunarCalendarBar.entitlements
+    entitlements:
+      path: LunarCalendarBar/Resources/LunarCalendarBar.entitlements

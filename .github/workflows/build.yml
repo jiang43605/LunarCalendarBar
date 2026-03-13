@@ -1,0 +1,103 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
+
+jobs:
+  build:
+    name: Build DMG
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+        
+      - name: Verify Xcode
+        run: xcodebuild -version
+        
+      - name: Setup XcodeGen
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          
+      - name: Generate Xcode Project
+        run: xcodegen generate
+        
+      - name: Build Project
+        run: |
+          xcodebuild -project LunarCalendarBar.xcodeproj \
+            -scheme LunarCalendarBar \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            build
+      
+      - name: Create DMG
+        run: |
+          # Build release version
+          xcodebuild -project LunarCalendarBar.xcodeproj \
+            -scheme LunarCalendarBar \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            build
+          
+          # Find the app bundle
+          APP_BUNDLE=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d | head -1)
+          
+          if [ -z "$APP_BUNDLE" ]; then
+            echo "Error: App bundle not found"
+            exit 1
+          fi
+          
+          # Create DMG
+          brew install create-dmg
+          create-dmg \
+            --volname "LunarCalendarBar" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --app-drop-link 425 178 \
+            "$APP_BUNDLE" \
+            "LunarCalendarBar.dmg"
+          
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: LunarCalendarBar-DMG
+          path: LunarCalendarBar.dmg
+          retention-days: 30
+
+  release:
+    name: Create Release
+    needs: build
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Download DMG
+        uses: actions/download-artifact@v4
+        with:
+          name: LunarCalendarBar-DMG
+          
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: LunarCalendarBar.dmg
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
