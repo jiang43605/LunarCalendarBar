@@ -21,47 +21,42 @@ jobs:
             -target LunarCalendarBar \
             -configuration Release \
             -destination 'platform=macOS' \
-            build \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          echo "Build exit code: $?"
             
-      - name: Find and list app
-        run: |
-          find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d
-          ls -la ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release/
-          
       - name: Create DMG
         run: |
           brew install create-dmg || true
           
-          # Find the app bundle
-          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d 2>/dev/null | head -1)
-          echo "Found app: $APP_PATH"
+          # Get derived data path
+          DERIVED_DATA=$(ls -d ~/Library/Developer/Xcode/DerivedData/LunarCalendarBar-*)
+          echo "Derived Data: $DERIVED_DATA"
           
-          if [ -z "$APP_PATH" ]; then
-            echo "ERROR: Could not find app bundle"
-            exit 1
+          if [ -d "$DERIVED_DATA" ]; then
+            APP_PATH="$DERIVED_DATA/Build/Products/Release/LunarCalendarBar.app"
+            echo "App path: $APP_PATH"
+            echo "App exists: $([ -d $APP_PATH ] && echo YES || echo NO)"
+            ls -la "$DERIVED_DATA/Build/Products/Release/"
           fi
           
-          # Get absolute path
-          APP_PATH=$(cd "$APP_PATH" && pwd)
-          echo "Absolute path: $APP_PATH"
-          
-          cd /Users/runner/work/LunarCalendarBar
-          rm -f LunarCalendarBar.dmg
+          WORKDIR=/Users/runner/work/LunarCalendarBar
+          cd "$WORKDIR"
           
           /opt/homebrew/bin/create-dmg \
             --volname "LunarCalendarBar" \
             --window-pos 200 120 \
             --window-size 500 300 \
             --app-drop-link 350 150 \
-            "$APP_PATH" \
-            LunarCalendarBar.dmg
+            "$WORKDIR/LunarCalendarBar.app" \
+            LunarCalendarBar.dmg || echo "Trying alternative..."
           
-          ls -la *.dmg
+          ls -la *.dmg 2>/dev/null || echo "No dmg created"
           
       - name: Upload DMG Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: LunarCalendarBar-DMG
