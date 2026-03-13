@@ -15,6 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
+      - name: Install XcodeGen
+        run: brew install xcodegen
+        
+      - name: Generate Xcode Project
+        run: xcodegen generate
+        
       - name: Build Project (Debug)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
@@ -33,8 +39,16 @@ jobs:
             
       - name: Create DMG
         run: |
-          APP_BUNDLE=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d | head -1)
-          echo "Found app bundle: $APP_BUNDLE"
+          # Find the built app
+          APP_PATH=""
+          for derived in ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release; do
+            if [ -d "$derived/LunarCalendarBar.app" ]; then
+              APP_PATH="$derived/LunarCalendarBar.app"
+              break
+            fi
+          done
+          
+          echo "Found app: $APP_PATH"
           
           # Install create-dmg if needed
           if ! command -v create-dmg &> /dev/null; then
@@ -50,7 +64,7 @@ jobs:
             --window-pos 200 120 \
             --window-size 500 300 \
             --app-drop-link 350 150 \
-            "$APP_BUNDLE" \
+            "$APP_PATH" \
             "LunarCalendarBar.dmg" || echo "Note: DMG may have issues"
           
           ls -la *.dmg 2>/dev/null || echo "No DMG found"
@@ -73,6 +87,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: Install XcodeGen
+        run: brew install xcodegen
+        
+      - name: Generate Xcode Project
+        run: xcodegen generate
         
       - name: Download DMG
         uses: actions/download-artifact@v4
