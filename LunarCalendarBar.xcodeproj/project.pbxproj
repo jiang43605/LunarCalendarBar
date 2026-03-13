@@ -49,7 +49,7 @@
 				456F074216983558789839BE /* Info.plist */,
 				F47FD27C4748E0338980621E /* LunarCalendarBar.entitlements */,
 			);
-
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		B81CB3DFE01FC4D5A9001E4D /* Products */ = {
@@ -73,7 +73,7 @@
 				B1E1F4B34835F3CE2AB1F83E /* LunarService.swift */,
 				8756C529DCD4A9FB5F6932C1 /* Resources */,
 			);
-
+			path = LunarCalendarBar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

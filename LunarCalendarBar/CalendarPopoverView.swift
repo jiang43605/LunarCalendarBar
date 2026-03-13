@@ -35,7 +35,7 @@ struct GlassBackgroundEffect: View {
     var body: some View {
         Text("")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(.glass)
+            .background(.ultraThinMaterial)
     }
 }
 
