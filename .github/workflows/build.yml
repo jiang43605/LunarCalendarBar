@@ -15,18 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Build Project (Debug)
-        run: |
-          xcodebuild -project LunarCalendarBar.xcodeproj \
-            -target LunarCalendarBar \
-            -configuration Debug \
-            -destination 'platform=macOS' \
-            build \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-            
-      - name: Build Project (Release)
+      - name: Build Project
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
             -target LunarCalendarBar \
@@ -37,13 +26,29 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
             
+      - name: Find and list app
+        run: |
+          find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d
+          ls -la ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release/
+          
       - name: Create DMG
         run: |
           brew install create-dmg || true
           
-          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d | head -1)
+          # Find the app bundle
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d 2>/dev/null | head -1)
           echo "Found app: $APP_PATH"
           
+          if [ -z "$APP_PATH" ]; then
+            echo "ERROR: Could not find app bundle"
+            exit 1
+          fi
+          
+          # Get absolute path
+          APP_PATH=$(cd "$APP_PATH" && pwd)
+          echo "Absolute path: $APP_PATH"
+          
+          cd /Users/runner/work/LunarCalendarBar
           rm -f LunarCalendarBar.dmg
           
           /opt/homebrew/bin/create-dmg \
@@ -53,6 +58,8 @@ jobs:
             --app-drop-link 350 150 \
             "$APP_PATH" \
             LunarCalendarBar.dmg
+          
+          ls -la *.dmg
           
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
