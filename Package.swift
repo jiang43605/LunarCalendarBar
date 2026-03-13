@@ -17,7 +17,7 @@ let package = Package(
             name: "LunarCalendarBar",
             path: "LunarCalendarBar",
             resources: [
-                .process("Resources")
+                .process("Resources", excludes: ["Info.plist", "*.entitlements"])
             ]
         )
     ]
