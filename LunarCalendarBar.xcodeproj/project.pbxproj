@@ -181,6 +181,8 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = LunarCalendarBar/Resources/Info.plist;
+				PRODUCT_NAME = LunarCalendarBar;
+				PRODUCT_MODULE_NAME = LunarCalendarBar;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
@@ -202,6 +204,8 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				INFOPLIST_FILE = LunarCalendarBar/Resources/Info.plist;
+				PRODUCT_NAME = LunarCalendarBar;
+				PRODUCT_MODULE_NAME = LunarCalendarBar;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
