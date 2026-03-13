@@ -15,19 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Install XcodeGen
-        run: brew install xcodegen
-        
-      - name: Generate Xcode Project
-        run: xcodegen generate
-        
       - name: Build Project (Debug)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
             -scheme LunarCalendarBar \
             -configuration Debug \
             -destination 'platform=macOS' \
-            build
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
             
       - name: Build Project (Release)
         run: |
@@ -35,7 +32,10 @@ jobs:
             -scheme LunarCalendarBar \
             -configuration Release \
             -destination 'platform=macOS' \
-            build
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
             
       - name: Create DMG
         run: |
@@ -74,12 +74,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
-      - name: Install XcodeGen
-        run: brew install xcodegen
-        
-      - name: Generate Xcode Project
-        run: xcodegen generate
         
       - name: Download DMG
         uses: actions/download-artifact@v4
