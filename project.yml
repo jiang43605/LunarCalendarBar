@@ -3,27 +3,18 @@ options:
   bundleIdPrefix: com.lunarcalendar
   deploymentTarget:
     macOS: "14.0"
-  xcodeVersion: "15.0"
-  generateEmptyDirectories: true
 
-settings:
-  base:
-    SWIFT_VERSION: "5.9"
-    MACOSX_DEPLOYMENT_TARGET: "14.0"
-    CLANG_ENABLE_MODULES: YES
-    SWIFT_EMIT_LOC_STRINGS: YES
-    IPHONEOS_DEPLOYMENT_TARGET: ""
+packages:
+  LunarCalendarBar:
+    path: .
+    product: LunarCalendarBar
 
 targets:
   LunarCalendarBar:
     type: application
     platform: macOS
     sources:
-      - path: LunarCalendarBar
-        excludes:
-          - "Resources/**"
-      - path: LunarCalendarBar/Resources
-        type: folder
+      - LunarCalendarBar
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lunarcalendar.bar
@@ -35,3 +26,6 @@ targets:
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGNING_ALLOWED: NO
         ENABLE_HARDENED_RUNTIME: NO
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "14.0"
+        GENERATE_INFOPLIST_FILE: NO

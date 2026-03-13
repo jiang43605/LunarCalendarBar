@@ -15,11 +15,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Install XcodeGen
-        run: brew install xcodegen
-        
       - name: Generate Xcode Project
-        run: xcodegen generate
+        run: swift package generate-xcodeproj
         
       - name: Build Project (Debug)
         run: |
@@ -27,7 +24,7 @@ jobs:
             -scheme LunarCalendarBar \
             -configuration Debug \
             -destination 'platform=macOS' \
-            build -quiet
+            build
             
       - name: Build Project (Release)
         run: |
@@ -35,39 +32,26 @@ jobs:
             -scheme LunarCalendarBar \
             -configuration Release \
             -destination 'platform=macOS' \
-            build -quiet
+            build
             
       - name: Create DMG
         run: |
-          # Find the built app
-          APP_PATH=""
-          for derived in ~/Library/Developer/Xcode/DerivedData/*/Build/Products/Release; do
-            if [ -d "$derived/LunarCalendarBar.app" ]; then
-              APP_PATH="$derived/LunarCalendarBar.app"
-              break
-            fi
-          done
-          
+          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d | head -1)
           echo "Found app: $APP_PATH"
           
-          # Install create-dmg if needed
           if ! command -v create-dmg &> /dev/null; then
             brew install create-dmg
           fi
           
-          # Remove existing dmg if exists
           rm -f LunarCalendarBar.dmg
           
-          # Create DMG
           create-dmg \
             --volname "LunarCalendarBar" \
             --window-pos 200 120 \
             --window-size 500 300 \
             --app-drop-link 350 150 \
             "$APP_PATH" \
-            "LunarCalendarBar.dmg" || echo "Note: DMG may have issues"
-          
-          ls -la *.dmg 2>/dev/null || echo "No DMG found"
+            "LunarCalendarBar.dmg"
           
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
@@ -88,11 +72,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Install XcodeGen
-        run: brew install xcodegen
-        
       - name: Generate Xcode Project
-        run: xcodegen generate
+        run: swift package generate-xcodeproj
         
       - name: Download DMG
         uses: actions/download-artifact@v4
