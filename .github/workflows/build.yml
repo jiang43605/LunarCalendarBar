@@ -18,7 +18,7 @@ jobs:
       - name: Build Project (Debug)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
-            -scheme LunarCalendarBar \
+            -target LunarCalendarBar \
             -configuration Debug \
             -destination 'platform=macOS' \
             build \
@@ -29,7 +29,7 @@ jobs:
       - name: Build Project (Release)
         run: |
           xcodebuild -project LunarCalendarBar.xcodeproj \
-            -scheme LunarCalendarBar \
+            -target LunarCalendarBar \
             -configuration Release \
             -destination 'platform=macOS' \
             build \
@@ -39,22 +39,20 @@ jobs:
             
       - name: Create DMG
         run: |
+          brew install create-dmg || true
+          
           APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "LunarCalendarBar.app" -type d | head -1)
           echo "Found app: $APP_PATH"
           
-          if ! command -v create-dmg &> /dev/null; then
-            brew install create-dmg
-          fi
-          
           rm -f LunarCalendarBar.dmg
           
-          create-dmg \
+          /opt/homebrew/bin/create-dmg \
             --volname "LunarCalendarBar" \
             --window-pos 200 120 \
             --window-size 500 300 \
             --app-drop-link 350 150 \
             "$APP_PATH" \
-            "LunarCalendarBar.dmg"
+            LunarCalendarBar.dmg
           
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
